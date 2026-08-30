@@ -1,0 +1,7 @@
+# Arquivos de ambiente
+*.env
+*.env.*
+
+# Python cache
+*__pycache__*
+*src/connection/venv*
