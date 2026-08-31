@@ -3,5 +3,21 @@
 *.env.*
 
 # Python cache
-*__pycache__*
-*src/connection/venv*
+__pycache__/
+*.egg-info
+build/
+dist/
+
+# Virtual environments
+.venv/
+
+# Databricks
+.databricks/
+
+# Dados brutos locais (CSVs grandes)
+database/
+
+# Scratch e explorations
+scratch/**
+!scratch/README.md
+**/explorations/**
