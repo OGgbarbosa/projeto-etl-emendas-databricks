@@ -1,5 +1,10 @@
 # Projeto de Análise de Emendas Parlamentares (ETL no Databricks)
 
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=for-the-badge&logo=git)
+
+> [!NOTE]
+> **🚧 Projeto em Desenvolvimento:** Este repositório está em fase ativa de construção e aprimoramento. A ingestão da camada **Bronze** está concluída e validada; as transformações das camadas **Silver** e **Gold** bem como os dashboards no Databricks Genie estão sendo desenvolvidos nas próximas etapas.
+
 Este projeto tem como objetivo processar e analisar dados de **Emendas Parlamentares** através de um pipeline de ETL moderno na plataforma Databricks. A solução utiliza a **Arquitetura Medalhão (Medallion Architecture)** com Unity Catalog para estruturar os dados e o **Databricks Genie** para a criação de painéis e consultas em linguagem natural.
 
 ## 🎯 Objetivo
