@@ -1,37 +1,37 @@
-"""This file configures pytest, initializes Databricks Connect, and provides fixtures for Spark and loading test data."""
-
 import os, sys, pathlib
 from contextlib import contextmanager
+import json
+import csv
+import pytest
 
+try:
+    from pyspark.sql import SparkSession
+    HAS_PYSPARK = True
+except ImportError:
+    HAS_PYSPARK = False
 
 try:
     from databricks.connect import DatabricksSession
     from databricks.sdk import WorkspaceClient
-    from pyspark.sql import SparkSession
-    import pytest
-    import json
-    import csv
-    import os
+    HAS_DB_CONNECT = True
 except ImportError:
-    raise ImportError(
-        "Test dependencies not found.\n\nRun tests using 'uv run pytest'. See http://docs.astral.sh/uv to learn more about uv."
-    )
+    HAS_DB_CONNECT = False
+
+
+from typing import Any
+
+@pytest.fixture()
+def spark() -> Any:
+    """Provide a SparkSession fixture for tests."""
+    if HAS_DB_CONNECT:
+        return DatabricksSession.builder.getOrCreate()
+    if HAS_PYSPARK:
+        return SparkSession.builder.getOrCreate()
+    pytest.skip("PySpark ou Databricks Connect não estão instalados no ambiente local")
 
 
 @pytest.fixture()
-def spark() -> SparkSession:
-    """Provide a SparkSession fixture for tests.
-
-    Minimal example:
-        def test_uses_spark(spark):
-            df = spark.createDataFrame([(1,)], ["x"])
-            assert df.count() == 1
-    """
-    return DatabricksSession.builder.getOrCreate()
-
-
-@pytest.fixture()
-def load_fixture(spark: SparkSession):
+def load_fixture(spark: Any):
     """Provide a callable to load JSON or CSV from fixtures/ directory.
 
     Example usage:
@@ -58,6 +58,8 @@ def load_fixture(spark: SparkSession):
 
 def _enable_fallback_compute():
     """Enable serverless compute if no compute is specified."""
+    if not HAS_DB_CONNECT:
+        return
     conf = WorkspaceClient().config
     if conf.serverless_compute_id or conf.cluster_id or os.environ.get("SPARK_REMOTE"):
         return
@@ -82,6 +84,8 @@ def _allow_stderr_output(config: pytest.Config):
 
 def pytest_configure(config: pytest.Config):
     """Configure pytest session."""
+    if not HAS_DB_CONNECT:
+        return
     with _allow_stderr_output(config):
         _enable_fallback_compute()
 
